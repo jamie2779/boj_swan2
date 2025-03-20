@@ -2,7 +2,7 @@
 # Edit at https://www.toptal.com/developers/gitignore?templates=windows,macos,visualstudiocode,node,dotenv
 
 ### dotenv ###
-.env
+**/.env
 
 ### macOS ###
 # General
