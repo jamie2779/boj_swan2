@@ -1,80 +1,26 @@
-import { ApplyOptions } from '@sapphire/decorators';
 import { Command } from '@sapphire/framework';
-import { ApplicationCommandType, ApplicationIntegrationType, InteractionContextType, Message } from 'discord.js';
+import { BaseCommand } from '../lib/baseCommand';
+import { SlashCommandBuilder } from '@discordjs/builders';
+import { isMessageInstance } from '@sapphire/discord.js-utilities';
 
-@ApplyOptions<Command.Options>({
-	description: 'ping pong'
-})
-export class UserCommand extends Command {
-	// Register Chat Input and Context Menu command
-	public override registerApplicationCommands(registry: Command.Registry) {
-		// Create shared integration types and contexts
-		// These allow the command to be used in guilds and DMs
-		const integrationTypes: ApplicationIntegrationType[] = [ApplicationIntegrationType.GuildInstall, ApplicationIntegrationType.UserInstall];
-		const contexts: InteractionContextType[] = [
-			InteractionContextType.BotDM,
-			InteractionContextType.Guild,
-			InteractionContextType.PrivateChannel
-		];
+export class PingCommand extends BaseCommand {
+  public constructor(context: Command.LoaderContext, options: Command.Options) {
+    super(context, { ...options });
+  }
 
-		// Register Chat Input command
-		registry.registerChatInputCommand({
-			name: this.name,
-			description: this.description,
-			integrationTypes,
-			contexts
-		});
+  protected createChatInput(builder: SlashCommandBuilder): SlashCommandBuilder {
+    return builder.setName('ping').setDescription('Ping bot to see if it is alive');
+  }
 
-		// Register Context Menu command available from any message
-		registry.registerContextMenuCommand({
-			name: this.name,
-			type: ApplicationCommandType.Message,
-			integrationTypes,
-			contexts
-		});
+  public override async chatInputRun(interaction: Command.ChatInputCommandInteraction) {
+    const msg = await interaction.reply({ content: `Ping?`, ephemeral: true, fetchReply: true });
 
-		// Register Context Menu command available from any user
-		registry.registerContextMenuCommand({
-			name: this.name,
-			type: ApplicationCommandType.User,
-			integrationTypes,
-			contexts
-		});
-	}
+    if (isMessageInstance(msg)) {
+      const diff = msg.createdTimestamp - interaction.createdTimestamp;
+      const ping = Math.round(this.container.client.ws.ping);
+      return interaction.editReply(`Pong 🏓! (Round trip took: ${diff}ms. Heartbeat: ${ping}ms.)`);
+    }
 
-	// Message command
-	public override async messageRun(message: Message) {
-		return this.sendPing(message);
-	}
-
-	// Chat Input (slash) command
-	public override async chatInputRun(interaction: Command.ChatInputCommandInteraction) {
-		return this.sendPing(interaction);
-	}
-
-	// Context Menu command
-	public override async contextMenuRun(interaction: Command.ContextMenuCommandInteraction) {
-		return this.sendPing(interaction);
-	}
-
-	private async sendPing(interactionOrMessage: Message | Command.ChatInputCommandInteraction | Command.ContextMenuCommandInteraction) {
-		const pingMessage =
-			interactionOrMessage instanceof Message
-				? interactionOrMessage.channel?.isSendable() && (await interactionOrMessage.channel.send({ content: 'Ping?' }))
-				: await interactionOrMessage.reply({ content: 'Ping?', fetchReply: true });
-
-		if (!pingMessage) return;
-
-		const content = `Pong! Bot Latency ${Math.round(this.container.client.ws.ping)}ms. API Latency ${
-			pingMessage.createdTimestamp - interactionOrMessage.createdTimestamp
-		}ms.`;
-
-		if (interactionOrMessage instanceof Message) {
-			return pingMessage.edit({ content });
-		}
-
-		return interactionOrMessage.editReply({
-			content
-		});
-	}
+    return interaction.editReply('Failed to retrieve ping :(');
+  }
 }
