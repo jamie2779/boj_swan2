@@ -5,7 +5,6 @@ import { prisma } from '../lib/prisma';
 export class IsNewUserPrecondition extends Precondition {
 	public override async chatInputRun(interaction: ChatInputCommandInteraction) {
 		const userId = interaction.user.id;
-
 		const existingUser = await prisma.user.findUnique({
 			where: {
 				discord_id: userId
