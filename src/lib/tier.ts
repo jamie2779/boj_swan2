@@ -25,7 +25,7 @@ export const tierMapping: Tier[] = [
 	{ tier: 'Platinum V', rating: 1600, color: 0x25d69b, limit: 10 },
 	{ tier: 'Platinum IV', rating: 1750, color: 0x27e2a4, limit: 10 },
 	{ tier: 'Platinum III', rating: 1900, color: 0x28edac, limit: 11 },
-	{ tier: 'Platinum II', rating: 2000, color: 0x00d8ff, limit: 11 },
+	{ tier: 'Platinum II', rating: 2000, color: 0x2af8b4, limit: 11 },
 	{ tier: 'Platinum I', rating: 2100, color: 0x2cffbc, limit: 11 },
 	{ tier: 'Diamond V', rating: 2200, color: 0x00b4fc, limit: 11 },
 	{ tier: 'Diamond IV', rating: 2300, color: 0x00c0ff, limit: 11 },

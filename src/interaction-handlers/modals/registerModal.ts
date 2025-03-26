@@ -30,7 +30,7 @@ export class RegisterModalHandler extends InteractionHandler {
 					rating: solvedUser.rating,
 					bio: solvedUser.bio,
 					solved_count: solvedUser.solvedCount,
-					profile_img: solvedUser.profileImageUrl
+					profile_img: solvedUser.profileImageUrl || 'https://static.solved.ac/misc/360x360/default_profile.png'
 				}
 			});
 

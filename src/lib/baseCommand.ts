@@ -1,7 +1,7 @@
 // src/lib/baseCommand.ts
 import { Command } from '@sapphire/framework';
 import { config } from 'dotenv';
-import { SlashCommandBuilder } from '@discordjs/builders';
+import { SlashCommandBuilder, SlashCommandOptionsOnlyBuilder } from '@discordjs/builders';
 
 config();
 
@@ -12,5 +12,7 @@ export abstract class BaseCommand extends Command {
 		});
 	}
 
-	protected abstract createChatInput(builder: SlashCommandBuilder): SlashCommandBuilder;
+	protected abstract createChatInput(
+		builder: SlashCommandBuilder | SlashCommandOptionsOnlyBuilder
+	): SlashCommandBuilder | SlashCommandOptionsOnlyBuilder;
 }
