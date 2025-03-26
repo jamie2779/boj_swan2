@@ -43,4 +43,6 @@ model ProblemHolder {
 
     problem Problem @relation(fields: [problem_id], references: [id], onDelete: Cascade)
     user    User    @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+    @@unique([user_id, problem_id])
 }
