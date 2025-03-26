@@ -13,7 +13,7 @@ export class PingCommand extends BaseCommand {
 	}
 
 	public override async chatInputRun(interaction: Command.ChatInputCommandInteraction) {
-		const modal = new ModalBuilder().setCustomId('register-modal').setTitle('회원가입');
+		const modal = new ModalBuilder().setCustomId('register-modal').setTitle('유저 등록');
 
 		const handle = new TextInputBuilder().setCustomId('handle').setLabel('백준 아이디').setStyle(TextInputStyle.Short).setRequired(true);
 

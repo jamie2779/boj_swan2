@@ -22,15 +22,16 @@ model User {
     notice_time  Int?     @default(18)
     is_active    Boolean  @default(true)
 
-    ProblemHolder ProblemHolder[] // User와 ProblemHolder 관계
+    problemHolders ProblemHolder[] // User와 ProblemHolder 관계
 }
 
 model Problem {
-    id    Int    @id
-    title String @db.VarChar(255)
-    level Int
+    id        Int    @id
+    title     String @db.VarChar(255)
+    level     Int
+    challenge Int    @default(0)
 
-    ProblemHolder ProblemHolder[] // Problem과 ProblemHolder 관계
+    problemHolders ProblemHolder[] // Problem과 ProblemHolder 관계
 }
 
 model ProblemHolder {
