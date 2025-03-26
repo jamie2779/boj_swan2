@@ -1,0 +1,46 @@
+// schema.prisma
+
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "mysql"
+    url      = env("DATABASE_URL")
+}
+
+model User {
+    id           Int      @id @default(autoincrement())
+    discord_id   String   @unique
+    handle       String   @unique @db.VarChar(255)
+    tier         Int
+    rating       Int
+    bio          String?  @db.Text
+    solved_count Int
+    profile_img  String?  @db.VarChar(255)
+    create_date  DateTime @default(now())
+    notice_time  Int?     @default(18)
+    is_active    Boolean  @default(true)
+
+    problemHolders ProblemHolder[] // User와 ProblemHolder 관계
+}
+
+model Problem {
+    id        Int    @id
+    title     String @db.VarChar(255)
+    level     Int
+    challenge Int    @default(0)
+
+    problemHolders ProblemHolder[] // Problem과 ProblemHolder 관계
+}
+
+model ProblemHolder {
+    id          Int      @id @default(autoincrement())
+    problem_id  Int
+    user_id     Int
+    strick      Boolean  @default(false)
+    create_date DateTime @default(now())
+
+    problem Problem @relation(fields: [problem_id], references: [id], onDelete: Cascade)
+    user    User    @relation(fields: [user_id], references: [id], onDelete: Cascade)
+}
