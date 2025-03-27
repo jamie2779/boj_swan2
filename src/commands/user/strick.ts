@@ -6,13 +6,13 @@ import { prisma } from '../../lib/prisma';
 
 export class InfoCommand extends BaseCommand {
 	public constructor(context: Command.LoaderContext, options: Command.Options) {
-		super(context, { ...options, preconditions: ['userOnly'] });
+		super(context, { ...options, preconditions: ['userOnly'], cooldownDelay: 300_000 });
 	}
 
 	protected createChatInput(builder: SlashCommandBuilder) {
 		return builder
 			.setName('스트릭')
-			.setDescription('특정 유저의 특정 날짜 스트릭을 확인합니다')
+			.setDescription('특정 유저의 특정 날짜 스트릭을 확인합니다(쿨타임 5분)')
 			.addUserOption((option) => option.setName('user').setDescription('유저를 선택해주세요(선택)').setRequired(false))
 			.addStringOption((option) => option.setName('date').setDescription('날짜를 입력해주세요(선택)').setRequired(false));
 	}
