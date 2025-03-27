@@ -29,6 +29,7 @@ export class InfoCommand extends BaseCommand {
 			return interaction.reply({ content: '등록되지 않은 유저입니다.', ephemeral: true });
 		}
 
+		await interaction.deferReply();
 		const embed = new EmbedBuilder()
 			.setColor(tierMapping[user.tier].color)
 			.setTitle(`${targetUser.username}님의 정보`)
@@ -46,6 +47,6 @@ export class InfoCommand extends BaseCommand {
 			.setTimestamp()
 			.setFooter({ text: `${interaction.user.username}님이 요청`, iconURL: interaction.user.displayAvatarURL() });
 
-		return interaction.reply({ embeds: [embed] });
+		return interaction.editReply({ embeds: [embed] });
 	}
 }
