@@ -14,7 +14,7 @@ export class InfoCommand extends BaseCommand {
 		return builder
 			.setName('벌금')
 			.setDescription('일주일 간의 벌금을 확인합니다.')
-			.addStringOption((option) => option.setName('date').setDescription('날짜를 입력해주세요').setRequired(false));
+			.addStringOption((option) => option.setName('date').setDescription('날짜를 입력해주세요(선택)').setRequired(false));
 	}
 
 	public override async chatInputRun(interaction: Command.ChatInputCommandInteraction) {
@@ -63,7 +63,7 @@ export class InfoCommand extends BaseCommand {
 		}
 		const embed = new EmbedBuilder()
 			.setColor(0xadff2f)
-			.setTitle(`${start.toLocaleDateString()} ~ ${end.toLocaleDateString()} 주간 정산`)
+			.setTitle(`${start.toLocaleDateString()} ~ ${end.toLocaleDateString()} 벌금`)
 			.addFields([
 				{
 					name: `인원: ${fineCount}명, 합계: ${fineSum}원`,

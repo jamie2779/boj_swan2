@@ -14,7 +14,7 @@ export class InfoCommand extends BaseCommand {
 		return builder
 			.setName('정보')
 			.setDescription('유저의 정보를 확인합니다.')
-			.addUserOption((option) => option.setName('user').setDescription('User to say hello to').setRequired(false));
+			.addUserOption((option) => option.setName('user').setDescription('유저를 선택해주세요(선택)').setRequired(false));
 	}
 
 	public override async chatInputRun(interaction: Command.ChatInputCommandInteraction) {
