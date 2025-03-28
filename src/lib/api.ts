@@ -134,6 +134,11 @@ export async function updateUser(user: User) {
 
 	return updatedUser;
 }
+
+/**
+ * active한 모든 유저의 정보 업데이트
+ * @param date 문제 등록 기준 날짜
+ */
 export async function refreshAllUser(date: Date = new Date()) {
 	const users = await prisma.user.findMany({
 		where: {
@@ -149,6 +154,12 @@ export async function refreshAllUser(date: Date = new Date()) {
 	}
 }
 
+/**
+ * 특정 유저의 특정 기간 벌금 계산
+ * @param user 대상 유저
+ * @param date 대상 날짜(해당 날짜가 포함된 주 기준으로 진행, 기본값은 현재 날짜)
+ * @returns
+ */
 export async function culcFine(user: User & { problemHolders: (ProblemHolder & { problem: Problem })[] }, date: Date = new Date()) {
 	//1. date가 포함된 주의 월요일 오전 6시 ~ 다음주 월요일 오전 6시 기준 시간 계산
 	const start = new Date(date.getFullYear(), date.getMonth(), date.getDate() - date.getDay() + 1, 6);
