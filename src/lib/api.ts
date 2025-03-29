@@ -158,7 +158,7 @@ export async function refreshAllUser(date: Date = new Date()) {
  * 특정 유저의 특정 기간 벌금 계산
  * @param user 대상 유저
  * @param date 대상 날짜(해당 날짜가 포함된 주 기준으로 진행, 기본값은 현재 날짜)
- * @returns
+ * @returns { successCount, failCount, fine, challenge, finish, start, end}
  */
 export async function culcFine(user: User & { problemHolders: (ProblemHolder & { problem: Problem })[] }, date: Date = new Date()) {
 	let start;
@@ -199,10 +199,59 @@ export async function culcFine(user: User & { problemHolders: (ProblemHolder & {
 		}
 	}
 
-	return { successCount, failCount, fine: fineExp(failCount, challenge), challenge: challenge, finish: finish, start: start, end: end };
+	return { successCount, failCount, fine: fineExp(failCount, challenge), challenge, finish, start, end };
 }
 
+/**
+ * 벌금 계산 식
+ * @param n 벌금 계산을 위한 실패 횟수
+ * @param challenge 도전문제 달성 여부
+ * @returns 계산된 벌금
+ */
 export function fineExp(n: number, challenge: boolean): number {
 	if (n === 0) return 0;
 	else return 1000 * 3 ** Math.min(3, n) + (challenge ? 0 : 3000);
+}
+
+/**
+ * 문제 ID 리스트를 받아서 DB에 문제 정보를 추가하는 함수
+ * @param problems 문제 ID 리스트
+ */
+export async function addProblems(problems: number[]) {
+	const problemList = [];
+	try {
+		const problemIds = problems.join('|');
+		const url = `https://solved.ac/api/v3/search/problem?query=id:${problemIds}&direction=asc&page=1&sort=id`;
+		const res = await axios.get(url);
+		const data = res.data as SolvedProblemList;
+		problemList.push(...data.items);
+	} catch (e) {
+		throw new Error('문제 정보를 가져오는 중 오류가 발생했습니다.');
+	}
+	try {
+		// 이미 저장된 문제 ID 확인
+		const existingProblems = await prisma.problem.findMany({
+			where: {
+				id: { in: problems }
+			},
+			select: {
+				id: true
+			}
+		});
+		const existingProblemIdSet = new Set(existingProblems.map((p) => p.id));
+		// 아직 Problem 테이블에 없는 문제만 선별
+		const problemsToCreate = problemList.filter((p) => !existingProblemIdSet.has(p.problemId));
+		// Problem 테이블에 새로 추가
+		if (problemsToCreate.length > 0) {
+			await prisma.problem.createMany({
+				data: problemsToCreate.map((p) => ({
+					id: p.problemId,
+					title: p.titleKo,
+					level: p.level
+				}))
+			});
+		}
+	} catch (e) {
+		throw new Error('문제 정보를 등록하는 중 오류가 발생했습니다.');
+	}
 }
