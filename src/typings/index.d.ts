@@ -4,6 +4,7 @@ import '@sapphire/pieces';
 declare module '@sapphire/pieces' {
 	interface Container {
 		prisma: PrismaClient;
+		adminIds: string[];
 	}
 }
 

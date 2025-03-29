@@ -2,13 +2,14 @@
 import { Command } from '@sapphire/framework';
 import { config } from 'dotenv';
 import { SlashCommandBuilder, SlashCommandOptionsOnlyBuilder } from '@discordjs/builders';
+import { container } from '@sapphire/pieces';
 
 config();
 
 export abstract class BaseCommand extends Command {
 	public constructor(context: Command.LoaderContext, options: Command.Options) {
 		super(context, {
-			cooldownFilteredUsers: process.env.ADMIN_ID ? [process.env.ADMIN_ID] : [],
+			cooldownFilteredUsers: container.adminIds,
 			...options
 		});
 	}
