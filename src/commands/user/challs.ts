@@ -23,6 +23,9 @@ export class InfoCommand extends BaseCommand {
 		const user = await prisma.user.findUnique({
 			where: {
 				discord_id: interaction.user.id
+			},
+			include: {
+				problemHolders: true
 			}
 		});
 
@@ -35,7 +38,7 @@ export class InfoCommand extends BaseCommand {
 			return interaction.reply({ content: '그룹 번호는 1~4 사이의 숫자여야 합니다.', ephemeral: true });
 		}
 
-		await interaction.deferReply();
+		await interaction.deferReply({ ephemeral: true });
 
 		const problems = await prisma.problem.findMany({
 			where: {
@@ -46,16 +49,45 @@ export class InfoCommand extends BaseCommand {
 			}
 		});
 
+		const solvedProblems = problems.filter((problem) => {
+			return user.problemHolders.some((holder) => holder.problem_id === problem.id);
+		});
+
+		const nonSolvedProblems = problems.filter((problem) => {
+			return !user.problemHolders.some((holder) => holder.problem_id === problem.id);
+		});
+
 		const embed = new EmbedBuilder()
 			.setColor(0xadff2f)
 			.setTitle(`도전 문제 (${group_id})`)
-			.addFields({
-				name: `문제 목록 [${problems.length}개]`,
-				value: problems
-					.map((problem) => `[[${tierMapping[problem.level].tier}] ${problem.title}](https://www.acmicpc.net/problem/${problem.id})`)
-					.join('\n'),
-				inline: true
-			})
+			.addFields(
+				{
+					name: `아직 풀지 않은 문제[${nonSolvedProblems.length}개]`,
+					value:
+						nonSolvedProblems.length > 0
+							? nonSolvedProblems
+									.map(
+										(problem) =>
+											`[[${tierMapping[problem.level].tier}] ${problem.title}](https://www.acmicpc.net/problem/${problem.id})`
+									)
+									.join('\n')
+							: '없음',
+					inline: false
+				},
+				{
+					name: `푼 문제[${solvedProblems.length}개]`,
+					value:
+						solvedProblems.length > 0
+							? solvedProblems
+									.map(
+										(problem) =>
+											`[[${tierMapping[problem.level].tier}] ${problem.title}](https://www.acmicpc.net/problem/${problem.id})`
+									)
+									.join('\n')
+							: '없음',
+					inline: false
+				}
+			)
 			.setTimestamp()
 			.setFooter({ text: `${interaction.user.username}님이 요청`, iconURL: interaction.user.displayAvatarURL() });
 
