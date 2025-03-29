@@ -27,10 +27,6 @@ export class InfoCommand extends BaseCommand {
 
 		await interaction.deferReply();
 
-		const start = new Date(targetDate.getFullYear(), targetDate.getMonth(), targetDate.getDate() - targetDate.getDay() + 1, 6);
-		const end = new Date(start);
-		end.setDate(end.getDate() + 6);
-
 		const users = await prisma.user.findMany({
 			where: {
 				is_active: true
@@ -39,9 +35,6 @@ export class InfoCommand extends BaseCommand {
 				problemHolders: {
 					include: {
 						problem: true
-					},
-					where: {
-						strick: true
 					}
 				}
 			}
@@ -50,23 +43,38 @@ export class InfoCommand extends BaseCommand {
 		let fines = '';
 		let fineCount = 0;
 		let fineSum = 0;
-
+		let finishAll = true;
+		let startAll;
+		let endAll;
 		for (const user of users) {
-			const { fine, challenge } = await culcFine(user, start);
+			const { fine, challenge, finish, start, end } = await culcFine(user, targetDate);
+			if (!startAll) {
+				startAll = start;
+			}
+			if (!endAll) {
+				endAll = end;
+			}
+			if (!finish) {
+				finishAll = false;
+			}
 			if (fine > 0) {
-				fines += `:x:  ${user.handle} [${fine}원] ${challenge ? ':exclamation:' : ''}\n `;
+				fines += `:x:  ${user.handle} [${fine}원] ${challenge ? ':exclamation:' : finish ? '' : ':question:'}\n `;
 				fineCount++;
 				fineSum += fine;
 			} else {
-				fines += `:white_check_mark:  ${user.handle} [0원] ${challenge ? ':exclamation:' : ''}\n `;
+				fines += `:white_check_mark:  ${user.handle} [0원] ${challenge ? ':exclamation:' : finish ? '' : ':question:'}\n `;
 			}
 		}
+		if (!startAll || !endAll) {
+			return interaction.editReply({ content: '유저가 존재하지 않습니다.' });
+		}
+
 		const embed = new EmbedBuilder()
 			.setColor(0xadff2f)
-			.setTitle(`${start.toLocaleDateString()} ~ ${end.toLocaleDateString()} 벌금`)
+			.setTitle(`${startAll.toLocaleDateString()} ~ ${endAll.toLocaleDateString()} 벌금`)
 			.addFields([
 				{
-					name: `인원: ${fineCount}명, 합계: ${fineSum}원`,
+					name: `인원: ${fineCount}명, 합계: ${fineSum}원 ${finishAll ? '' : '(진행중)'}`,
 					value: fines,
 					inline: false
 				}

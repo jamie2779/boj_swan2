@@ -161,27 +161,48 @@ export async function refreshAllUser(date: Date = new Date()) {
  * @returns
  */
 export async function culcFine(user: User & { problemHolders: (ProblemHolder & { problem: Problem })[] }, date: Date = new Date()) {
-	//1. date가 포함된 주의 월요일 오전 6시 ~ 다음주 월요일 오전 6시 기준 시간 계산
-	const start = new Date(date.getFullYear(), date.getMonth(), date.getDate() - date.getDay() + 1, 6);
-	const end = new Date(start);
-	end.setDate(end.getDate() + 7);
-
-	//2. user의 ProblemHolders 중 해당 기간의 문제들을 필터링
-	const filteredProblems = user.problemHolders.filter((p) => p.strick && p.create_date >= start && p.create_date < end);
-
-	//3. start부터 end 까지 하루씩 돌아가며 해당 일에 strick이 있는지 보고 스트릭이0인 경우 카운트
-	let notStrickCount = 0;
-	for (let d = new Date(start); d < end; d.setDate(d.getDate() + 1)) {
-		if (d < user.create_date) continue;
-		if (d > date) break;
-		const nextDay = new Date(d);
-		nextDay.setDate(d.getDate() + 1);
-		const strick = filteredProblems.some((p) => d <= p.create_date && p.create_date < nextDay);
-		if (!strick) notStrickCount++;
+	let start;
+	if (date.getDay() === 0) {
+		start = new Date(date.getFullYear(), date.getMonth(), date.getDate() - date.getDay() - 6, 6);
+	} else {
+		start = new Date(date.getFullYear(), date.getMonth(), date.getDate() - date.getDay() + 1, 6);
 	}
-	//4. filteredProblems에 있는 문제들 중 challenge가 1 이상인 경우가 있는지 판단
-	const hasChallenge = filteredProblems.some((p) => p.problem.challenge > 0);
-	//5. 벌금 계산 후 반환
-	if (notStrickCount === 0) return { fine: 0, challenge: hasChallenge };
-	else return { fine: 1000 * 3 ** Math.min(3, notStrickCount), challenge: hasChallenge };
+	const end = new Date(start);
+	end.setDate(end.getDate() + 6);
+
+	let successCount = 0;
+	let failCount = 0;
+	let challenge = false;
+	let finish = true;
+	for (let i = 0; i < 7; i++) {
+		const _start = new Date(start);
+		const _end = new Date(start);
+		_start.setDate(_start.getDate() + i);
+		_end.setDate(_end.getDate() + i + 1);
+		const holders = user.problemHolders.filter((p) => p.create_date >= _start && p.create_date < _end);
+		const strickCount = holders.filter((p) => p.strick).length;
+		const challengeCount = holders.filter((p) => p.problem.challenge > 0).length;
+		if (challengeCount > 0) {
+			challenge = true;
+		}
+		const now = new Date();
+		if (user.create_date > _end) {
+			continue;
+		} else if (now < _end) {
+			finish = false;
+		} else {
+			if (strickCount > 0) {
+				successCount++;
+			} else {
+				failCount++;
+			}
+		}
+	}
+
+	return { successCount, failCount, fine: fineExp(failCount, challenge), challenge: challenge, finish: finish, start: start, end: end };
+}
+
+export function fineExp(n: number, challenge: boolean): number {
+	if (n === 0) return 0;
+	else return 1000 * 3 ** Math.min(3, n) + (challenge ? 0 : 3000);
 }
