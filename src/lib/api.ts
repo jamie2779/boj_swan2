@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { User, ProblemHolder, Problem } from '@prisma/client';
+import { User, ProblemHolder } from '@prisma/client';
 import { SolvedUser, SolvedProblemList, SolvedProblem } from './solvedType';
 import { prisma } from './prisma';
 import { tierMapping } from './tier';
@@ -59,14 +59,17 @@ export async function saveSolvedProblems(user: User & { problemHolders: ProblemH
 				id: { in: newProblems.map((p) => p.problemId) }
 			},
 			select: {
-				id: true
+				id: true,
+				challenge: true,
+				level: true
 			}
 		});
-		const existingProblemIdSet = new Set(existingProblems.map((p) => p.id));
+		const existingProblemMap = new Map(existingProblems.map((p) => [p.id, p]));
 
-		// 아직 Problem 테이블에 없는 문제만 선별
-		const problemsToCreate = newProblems.filter((p) => !existingProblemIdSet.has(p.problemId));
-		// Problem 테이블에 새로 추가
+		// 2. Problem 테이블에 새로 추가할 문제 목록 만들기
+		const problemsToCreate = newProblems.filter((p) => !existingProblemMap.has(p.problemId));
+
+		// 3. 문제 새로 추가
 		if (problemsToCreate.length > 0) {
 			await prisma.problem.createMany({
 				data: problemsToCreate.map((p) => ({
@@ -78,17 +81,26 @@ export async function saveSolvedProblems(user: User & { problemHolders: ProblemH
 			});
 		}
 
-		// ProblemHolder 테이블에 새로 추가
+		// 4. ProblemHolder 테이블에 새로 추가
 		await prisma.problemHolder.createMany({
-			data: newProblems.map((p) => ({
-				user_id: user.id,
-				problem_id: p.problemId,
-				create_date: date,
-				strick: p.level >= tierMapping[user.tier].limit
-			})),
+			data: newProblems.map((p) => {
+				const problem = existingProblemMap.get(p.problemId);
+				const level = p.level;
+				const strick = level >= tierMapping[user.tier].limit;
+
+				const challengeValue = problem?.challenge ?? 0;
+				const challenge = challengeValue >= tierMapping[user.tier].challenge;
+
+				return {
+					user_id: user.id,
+					problem_id: p.problemId,
+					create_date: date,
+					strick,
+					challenge
+				};
+			}),
 			skipDuplicates: true
 		});
-
 		// 최신 ProblemHolder 리스트 반환
 		const updatedHolders = await prisma.problemHolder.findMany({
 			where: {
@@ -158,9 +170,9 @@ export async function refreshAllUser(date: Date = new Date()) {
  * 특정 유저의 특정 기간 벌금 계산
  * @param user 대상 유저
  * @param date 대상 날짜(해당 날짜가 포함된 주 기준으로 진행, 기본값은 현재 날짜)
- * @returns
+ * @returns { successCount, failCount, fine, challenge, finish, start, end}
  */
-export async function culcFine(user: User & { problemHolders: (ProblemHolder & { problem: Problem })[] }, date: Date = new Date()) {
+export async function culcFine(user: User & { problemHolders: ProblemHolder[] }, date: Date = new Date()) {
 	let start;
 	if (date.getDay() === 0) {
 		start = new Date(date.getFullYear(), date.getMonth(), date.getDate() - date.getDay() - 6, 6);
@@ -181,7 +193,7 @@ export async function culcFine(user: User & { problemHolders: (ProblemHolder & {
 		_end.setDate(_end.getDate() + i + 1);
 		const holders = user.problemHolders.filter((p) => p.create_date >= _start && p.create_date < _end);
 		const strickCount = holders.filter((p) => p.strick).length;
-		const challengeCount = holders.filter((p) => p.problem.challenge > 0).length;
+		const challengeCount = holders.filter((p) => p.challenge).length;
 		if (challengeCount > 0) {
 			challenge = true;
 		}
@@ -199,10 +211,59 @@ export async function culcFine(user: User & { problemHolders: (ProblemHolder & {
 		}
 	}
 
-	return { successCount, failCount, fine: fineExp(failCount, challenge), challenge: challenge, finish: finish, start: start, end: end };
+	return { successCount, failCount, fine: fineExp(failCount, challenge || !finish), challenge, finish, start, end };
 }
 
+/**
+ * 벌금 계산 식
+ * @param n 벌금 계산을 위한 실패 횟수
+ * @param challenge 도전문제 달성 여부
+ * @returns 계산된 벌금
+ */
 export function fineExp(n: number, challenge: boolean): number {
 	if (n === 0) return 0;
 	else return 1000 * 3 ** Math.min(3, n) + (challenge ? 0 : 3000);
+}
+
+/**
+ * 문제 ID 리스트를 받아서 DB에 문제 정보를 추가하는 함수
+ * @param problems 문제 ID 리스트
+ */
+export async function addProblems(problems: number[]) {
+	const problemList = [];
+	try {
+		const problemIds = problems.join('|');
+		const url = `https://solved.ac/api/v3/search/problem?query=id:${problemIds}&direction=asc&page=1&sort=id`;
+		const res = await axios.get(url);
+		const data = res.data as SolvedProblemList;
+		problemList.push(...data.items);
+	} catch (e) {
+		throw new Error('문제 정보를 가져오는 중 오류가 발생했습니다.');
+	}
+	try {
+		// 이미 저장된 문제 ID 확인
+		const existingProblems = await prisma.problem.findMany({
+			where: {
+				id: { in: problems }
+			},
+			select: {
+				id: true
+			}
+		});
+		const existingProblemIdSet = new Set(existingProblems.map((p) => p.id));
+		// 아직 Problem 테이블에 없는 문제만 선별
+		const problemsToCreate = problemList.filter((p) => !existingProblemIdSet.has(p.problemId));
+		// Problem 테이블에 새로 추가
+		if (problemsToCreate.length > 0) {
+			await prisma.problem.createMany({
+				data: problemsToCreate.map((p) => ({
+					id: p.problemId,
+					title: p.titleKo,
+					level: p.level
+				}))
+			});
+		}
+	} catch (e) {
+		throw new Error('문제 정보를 등록하는 중 오류가 발생했습니다.');
+	}
 }

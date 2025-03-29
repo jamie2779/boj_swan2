@@ -32,11 +32,7 @@ export class InfoCommand extends BaseCommand {
 				discord_id: targetUser.id
 			},
 			include: {
-				problemHolders: {
-					include: {
-						problem: true
-					}
-				}
+				problemHolders: true
 			}
 		});
 		if (!user) {
@@ -68,13 +64,10 @@ export class InfoCommand extends BaseCommand {
 						gte: _start,
 						lt: _end
 					}
-				},
-				include: {
-					problem: true
 				}
 			});
 			const strickCount = holders.filter((p) => p.strick).length;
-			const challengeCount = holders.filter((p) => p.problem.challenge > 0).length;
+			const challengeCount = holders.filter((p) => p.challenge).length;
 			if (challengeCount > 0) {
 				challenge = true;
 			}
@@ -83,7 +76,6 @@ export class InfoCommand extends BaseCommand {
 				content += `:grey_question: ${_start.toLocaleDateString()} \n`;
 			} else if (now < _end) {
 				content += `:grey_question: ${_start.toLocaleDateString()}[?문제/?문제]\n`;
-				challenge = true;
 				finish = false;
 			} else {
 				content += `${strickCount > 0 ? ':white_check_mark:' : ':x:'}${_start.toLocaleDateString()}[${strickCount}문제/${holders.length}문제] ${challengeCount > 0 ? ':exclamation:' : ''} \n`;
@@ -95,7 +87,7 @@ export class InfoCommand extends BaseCommand {
 			}
 		}
 
-		const fine = fineExp(failCount, challenge);
+		const fine = fineExp(failCount, challenge || !finish);
 		const embed = new EmbedBuilder()
 			.setColor(0xadff2f)
 			.setTitle(`${user.handle}님의 스트릭 기록`)

@@ -21,6 +21,7 @@ model User {
     create_date  DateTime @default(now())
     notice_time  Int?     @default(18)
     is_active    Boolean  @default(true)
+    is_admin     Boolean  @default(false)
 
     problemHolders ProblemHolder[] // User와 ProblemHolder 관계
 }
@@ -39,6 +40,7 @@ model ProblemHolder {
     problem_id  Int
     user_id     Int
     strick      Boolean  @default(false)
+    challenge   Boolean  @default(false)
     create_date DateTime @default(now())
 
     problem Problem @relation(fields: [problem_id], references: [id], onDelete: Cascade)
