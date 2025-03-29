@@ -1,6 +1,6 @@
 import { InteractionHandler, InteractionHandlerTypes } from '@sapphire/framework';
 import { type ModalSubmitInteraction } from 'discord.js';
-import { getSolvedUser, saveSolvedProblems } from '../../lib/api';
+import { getSolvedUser, saveSolvedProblems, updateUserRole } from '../../lib/api';
 import { User, ProblemHolder } from '@prisma/client';
 
 export class RegisterModalHandler extends InteractionHandler {
@@ -40,6 +40,7 @@ export class RegisterModalHandler extends InteractionHandler {
 			});
 
 			if (!user) throw new Error('등록된 유저를 찾을 수 없습니다.');
+			await updateUserRole(user);
 			await interaction.editReply({ content: '유저 등록이 완료되었습니다!' });
 		} catch (_e) {
 			const e = _e as Error;

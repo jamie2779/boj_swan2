@@ -3,6 +3,8 @@ import { User, ProblemHolder } from '@prisma/client';
 import { SolvedUser, SolvedProblemList, SolvedProblem } from './solvedType';
 import { prisma } from './prisma';
 import { tierMapping } from './tier';
+import { container } from '@sapphire/framework';
+
 /**
  * 핸들 이용해서 유저 정보 가져오는 함수
  * @param handle Solve.ac 유저의 핸들
@@ -144,6 +146,7 @@ export async function updateUser(user: User) {
 		}
 	});
 
+	await updateUserRole(updatedUser);
 	return updatedUser;
 }
 
@@ -265,5 +268,33 @@ export async function addProblems(problems: number[]) {
 		}
 	} catch (e) {
 		throw new Error('문제 정보를 등록하는 중 오류가 발생했습니다.');
+	}
+}
+
+/**
+ * 유저의 디스코드 역할을 업데이트 합니다
+ * @param user 유저 객체
+ */
+export async function updateUserRole(user: User) {
+	try {
+		if (user.tier == 0) return;
+		const member = await container.guild.members.fetch(user.discord_id).catch(() => null);
+		if (!member) return;
+		const roles = container.roles;
+		if (!roles) return;
+		const index = Math.floor((user.tier - 1) / 5);
+		console.log(index);
+		const targetRole = roles[index];
+		for (const role of roles) {
+			if (member.roles.cache.has(role.id) && role.id !== targetRole.id) {
+				await member.roles.remove(role);
+			}
+			if (!member.roles.cache.has(targetRole.id) && role.id === targetRole.id) {
+				await member.roles.add(role);
+			}
+		}
+	} catch (e) {
+		console.log(e);
+		throw new Error('유저 역할 업데이트 중 오류가 발생했습니다.');
 	}
 }
