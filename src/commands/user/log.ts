@@ -3,7 +3,7 @@ import { BaseCommand } from '../../lib/baseCommand';
 import { SlashCommandBuilder } from '@discordjs/builders';
 import { EmbedBuilder } from 'discord.js';
 import { prisma } from '../../lib/prisma';
-import { culcFine } from '../../lib/api';
+import { fineExp } from '../../lib/api';
 
 export class InfoCommand extends BaseCommand {
 	public constructor(context: Command.LoaderContext, options: Command.Options) {
@@ -54,6 +54,8 @@ export class InfoCommand extends BaseCommand {
 		let content = '';
 		let successCount = 0;
 		let failCount = 0;
+		let challenge = false;
+		let finish = true;
 		for (let i = 0; i < 7; i++) {
 			const _start = new Date(start);
 			const _end = new Date(start);
@@ -73,13 +75,16 @@ export class InfoCommand extends BaseCommand {
 			});
 			const strickCount = holders.filter((p) => p.strick).length;
 			const challengeCount = holders.filter((p) => p.problem.challenge > 0).length;
-			console.log('======');
-			console.log(user.create_date.toLocaleString());
-			console.log(_start.toLocaleString());
-			console.log(_end.toLocaleString());
+			if (challengeCount > 0) {
+				challenge = true;
+			}
 			const now = new Date();
-			if (user.create_date > _end || now < _end) {
+			if (user.create_date > _end) {
 				content += `:grey_question: ${_start.toLocaleDateString()} \n`;
+			} else if (now < _end) {
+				content += `:grey_question: ${_start.toLocaleDateString()}[?문제/?문제]\n`;
+				challenge = true;
+				finish = false;
 			} else {
 				content += `${strickCount > 0 ? ':white_check_mark:' : ':x:'}${_start.toLocaleDateString()}[${strickCount}문제/${holders.length}문제] ${challengeCount > 0 ? ':exclamation:' : ''} \n`;
 				if (strickCount > 0) {
@@ -90,13 +95,13 @@ export class InfoCommand extends BaseCommand {
 			}
 		}
 
-		const { fine, challenge } = await culcFine(user, start);
+		const fine = fineExp(failCount, challenge);
 		const embed = new EmbedBuilder()
 			.setColor(0xadff2f)
 			.setTitle(`${user.handle}님의 스트릭 기록`)
 			.addFields([
 				{
-					name: `성공: ${successCount}일, 실패: ${failCount}일, 벌금: ${fine}원 ${challenge ? ':exclamation:' : ''}`,
+					name: `성공: ${successCount}일, 실패: ${failCount}일, 벌금: ${fine}원 ${finish ? '' : '(진행중)'}`,
 					value: content,
 					inline: false
 				}
