@@ -21,6 +21,7 @@ model User {
     create_date  DateTime @default(now())
     notice_time  Int?     @default(18)
     is_active    Boolean  @default(true)
+    is_admin     Boolean  @default(false)
 
     problemHolders ProblemHolder[] // User와 ProblemHolder 관계
 }

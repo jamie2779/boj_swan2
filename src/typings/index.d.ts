@@ -11,5 +11,6 @@ declare module '@sapphire/framework' {
 	interface Preconditions {
 		guestOnly: never;
 		userOnly: never;
+		adminOnly: never;
 	}
 }
