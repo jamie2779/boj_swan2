@@ -283,7 +283,6 @@ export async function updateUserRole(user: User) {
 		const roles = container.roles;
 		if (!roles) return;
 		const index = Math.floor((user.tier - 1) / 5);
-		console.log(index);
 		const targetRole = roles[index];
 		for (const role of roles) {
 			if (member.roles.cache.has(role.id) && role.id !== targetRole.id) {
