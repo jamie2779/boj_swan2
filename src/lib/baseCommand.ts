@@ -1,8 +1,7 @@
 // src/lib/baseCommand.ts
-import { Command } from '@sapphire/framework';
+import { Command, container } from '@sapphire/framework';
 import { config } from 'dotenv';
 import { SlashCommandBuilder, SlashCommandOptionsOnlyBuilder } from '@discordjs/builders';
-import { container } from '@sapphire/pieces';
 
 config();
 
