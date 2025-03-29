@@ -3,6 +3,7 @@ import { BaseCommand } from '../../lib/baseCommand';
 import { SlashCommandBuilder } from '@discordjs/builders';
 import { EmbedBuilder } from 'discord.js';
 import { prisma } from '../../lib/prisma';
+import { updateUser } from '../../lib/api';
 
 export class InfoCommand extends BaseCommand {
 	public constructor(context: Command.LoaderContext, options: Command.Options) {
@@ -36,6 +37,8 @@ export class InfoCommand extends BaseCommand {
 		}
 
 		await interaction.deferReply();
+
+		await updateUser(user);
 
 		//두가지 경우
 		//1. targetDate가 6시 이후인 경우, 해당 날짜 6시 부터 다음날 5시59분 까지 스트릭 확인

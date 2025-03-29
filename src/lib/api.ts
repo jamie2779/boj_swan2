@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { User, ProblemHolder, Problem } from '@prisma/client';
+import { User, ProblemHolder } from '@prisma/client';
 import { SolvedUser, SolvedProblemList, SolvedProblem } from './solvedType';
 import { prisma } from './prisma';
 import { tierMapping } from './tier';
@@ -59,14 +59,17 @@ export async function saveSolvedProblems(user: User & { problemHolders: ProblemH
 				id: { in: newProblems.map((p) => p.problemId) }
 			},
 			select: {
-				id: true
+				id: true,
+				challenge: true,
+				level: true
 			}
 		});
-		const existingProblemIdSet = new Set(existingProblems.map((p) => p.id));
+		const existingProblemMap = new Map(existingProblems.map((p) => [p.id, p]));
 
-		// 아직 Problem 테이블에 없는 문제만 선별
-		const problemsToCreate = newProblems.filter((p) => !existingProblemIdSet.has(p.problemId));
-		// Problem 테이블에 새로 추가
+		// 2. Problem 테이블에 새로 추가할 문제 목록 만들기
+		const problemsToCreate = newProblems.filter((p) => !existingProblemMap.has(p.problemId));
+
+		// 3. 문제 새로 추가
 		if (problemsToCreate.length > 0) {
 			await prisma.problem.createMany({
 				data: problemsToCreate.map((p) => ({
@@ -78,17 +81,26 @@ export async function saveSolvedProblems(user: User & { problemHolders: ProblemH
 			});
 		}
 
-		// ProblemHolder 테이블에 새로 추가
+		// 4. ProblemHolder 테이블에 새로 추가
 		await prisma.problemHolder.createMany({
-			data: newProblems.map((p) => ({
-				user_id: user.id,
-				problem_id: p.problemId,
-				create_date: date,
-				strick: p.level >= tierMapping[user.tier].limit
-			})),
+			data: newProblems.map((p) => {
+				const problem = existingProblemMap.get(p.problemId);
+				const level = p.level;
+				const strick = level >= tierMapping[user.tier].limit;
+
+				const challengeValue = problem?.challenge ?? 0;
+				const challenge = challengeValue >= tierMapping[user.tier].challenge;
+
+				return {
+					user_id: user.id,
+					problem_id: p.problemId,
+					create_date: date,
+					strick,
+					challenge
+				};
+			}),
 			skipDuplicates: true
 		});
-
 		// 최신 ProblemHolder 리스트 반환
 		const updatedHolders = await prisma.problemHolder.findMany({
 			where: {
@@ -160,7 +172,7 @@ export async function refreshAllUser(date: Date = new Date()) {
  * @param date 대상 날짜(해당 날짜가 포함된 주 기준으로 진행, 기본값은 현재 날짜)
  * @returns { successCount, failCount, fine, challenge, finish, start, end}
  */
-export async function culcFine(user: User & { problemHolders: (ProblemHolder & { problem: Problem })[] }, date: Date = new Date()) {
+export async function culcFine(user: User & { problemHolders: ProblemHolder[] }, date: Date = new Date()) {
 	let start;
 	if (date.getDay() === 0) {
 		start = new Date(date.getFullYear(), date.getMonth(), date.getDate() - date.getDay() - 6, 6);
@@ -181,7 +193,7 @@ export async function culcFine(user: User & { problemHolders: (ProblemHolder & {
 		_end.setDate(_end.getDate() + i + 1);
 		const holders = user.problemHolders.filter((p) => p.create_date >= _start && p.create_date < _end);
 		const strickCount = holders.filter((p) => p.strick).length;
-		const challengeCount = holders.filter((p) => p.problem.challenge > 0).length;
+		const challengeCount = holders.filter((p) => p.challenge).length;
 		if (challengeCount > 0) {
 			challenge = true;
 		}
@@ -199,7 +211,7 @@ export async function culcFine(user: User & { problemHolders: (ProblemHolder & {
 		}
 	}
 
-	return { successCount, failCount, fine: fineExp(failCount, challenge), challenge, finish, start, end };
+	return { successCount, failCount, fine: fineExp(failCount, challenge || !finish), challenge, finish, start, end };
 }
 
 /**

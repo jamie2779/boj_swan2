@@ -95,11 +95,12 @@ ${line03}${dev ? ` ${pad}${blc('<')}${llc('/')}${blc('>')} ${llc('DEVELOPMENT MO
 
 				for (const user of users) {
 					const filteredProblems = user.problemHolders.filter((p) => p.strick);
+					const challengeProblems = user.problemHolders.filter((p) => p.challenge);
 					if (filteredProblems.length > 0) {
-						stricks += `:white_check_mark:  ${user.handle} [${filteredProblems.length}문제/${user.problemHolders.length}문제]\n `;
+						stricks += `:white_check_mark:  ${user.handle} [${filteredProblems.length}문제/${user.problemHolders.length}문제] ${challengeProblems.length > 0 ? ':exclamation:' : ''}\n `;
 						strickCount++;
 					} else {
-						stricks += `:x:  ${user.handle} [${filteredProblems.length}문제/${user.problemHolders.length}문제]\n `;
+						stricks += `:x:  ${user.handle} [${filteredProblems.length}문제/${user.problemHolders.length}문제] ${challengeProblems.length > 0 ? ':exclamation:' : ''}\n `;
 						notStrickCount++;
 					}
 				}
@@ -135,11 +136,8 @@ ${line03}${dev ? ` ${pad}${blc('<')}${llc('/')}${blc('>')} ${llc('DEVELOPMENT MO
 					},
 					include: {
 						problemHolders: {
-							include: {
-								problem: true
-							},
 							where: {
-								strick: true
+								OR: [{ strick: true }, { challenge: true }]
 							}
 						}
 					}

@@ -32,11 +32,7 @@ export class InfoCommand extends BaseCommand {
 				is_active: true
 			},
 			include: {
-				problemHolders: {
-					include: {
-						problem: true
-					}
-				}
+				problemHolders: true
 			}
 		});
 
