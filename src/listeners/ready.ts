@@ -4,9 +4,9 @@ import type { StoreRegistryValue } from '@sapphire/pieces';
 import { blue, gray, green, magenta, magentaBright, white, yellow } from 'colorette';
 import { CronJob } from 'cron';
 import type { TextChannel } from 'discord.js';
-import { refreshAllUser, culcFine } from '../lib/api';
+import { refreshAllUser, culcFine } from '@/lib/api';
 import { EmbedBuilder } from 'discord.js';
-import { prisma } from '../lib/prisma';
+import { prisma } from '@/lib/prisma';
 
 const dev = process.env.NODE_ENV !== 'production';
 
