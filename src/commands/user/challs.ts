@@ -49,44 +49,58 @@ export class InfoCommand extends BaseCommand {
 			}
 		});
 
-		const solvedProblems = problems.filter((problem) => {
-			return user.problemHolders.some((holder) => holder.problem_id === problem.id);
-		});
+		const solvedProblems = problems.filter((problem) => user.problemHolders.some((holder) => holder.problem_id === problem.id));
 
-		const nonSolvedProblems = problems.filter((problem) => {
-			return !user.problemHolders.some((holder) => holder.problem_id === problem.id);
-		});
+		const nonSolvedProblems = problems.filter((problem) => !user.problemHolders.some((holder) => holder.problem_id === problem.id));
+
+		const splitProblemList = (problems: typeof solvedProblems, title: string): { name: string; value: string; inline: boolean }[] => {
+			const lines = problems.map((p) => `[[${tierMapping[p.level].tier}] ${p.title}](https://www.acmicpc.net/problem/${p.id})`);
+			const fields = [];
+			let chunk: string[] = [];
+			let currentLength = 0;
+			let fieldCount = 1;
+
+			for (const line of lines) {
+				if (currentLength + line.length + 1 > 1024) {
+					fields.push({
+						name: `${title} (${fieldCount})`,
+						value: chunk.join('\n'),
+						inline: false
+					});
+					chunk = [line];
+					currentLength = line.length;
+					fieldCount++;
+				} else {
+					chunk.push(line);
+					currentLength += line.length + 1;
+				}
+			}
+
+			if (chunk.length > 0) {
+				fields.push({
+					name: `${title} (${fieldCount})`,
+					value: chunk.join('\n'),
+					inline: false
+				});
+			}
+
+			if (fields.length === 0) {
+				fields.push({
+					name: `${title}`,
+					value: '없음',
+					inline: false
+				});
+			}
+
+			return fields;
+		};
 
 		const embed = new EmbedBuilder()
 			.setColor(0xadff2f)
 			.setTitle(`도전 문제 (${group_id})`)
 			.addFields(
-				{
-					name: `아직 풀지 않은 문제[${nonSolvedProblems.length}개]`,
-					value:
-						nonSolvedProblems.length > 0
-							? nonSolvedProblems
-									.map(
-										(problem) =>
-											`[[${tierMapping[problem.level].tier}] ${problem.title}](https://www.acmicpc.net/problem/${problem.id})`
-									)
-									.join('\n')
-							: '없음',
-					inline: false
-				},
-				{
-					name: `푼 문제[${solvedProblems.length}개]`,
-					value:
-						solvedProblems.length > 0
-							? solvedProblems
-									.map(
-										(problem) =>
-											`[[${tierMapping[problem.level].tier}] ${problem.title}](https://www.acmicpc.net/problem/${problem.id})`
-									)
-									.join('\n')
-							: '없음',
-					inline: false
-				}
+				...splitProblemList(nonSolvedProblems, `아직 풀지 않은 문제 [${nonSolvedProblems.length}개]`),
+				...splitProblemList(solvedProblems, `푼 문제 [${solvedProblems.length}개]`)
 			)
 			.setTimestamp()
 			.setFooter({ text: `${interaction.user.username}님이 요청`, iconURL: interaction.user.displayAvatarURL() });
