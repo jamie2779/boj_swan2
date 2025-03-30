@@ -7,7 +7,7 @@ import { tierMapping } from '../../lib/tier';
 
 export class InfoCommand extends BaseCommand {
 	public constructor(context: Command.LoaderContext, options: Command.Options) {
-		super(context, { ...options, preconditions: ['adminOnly'] });
+		super(context, { ...options, preconditions: ['userOnly'] });
 	}
 
 	protected createChatInput(builder: SlashCommandBuilder) {
