@@ -1,0 +1,14 @@
+{
+	"compilerOptions": {
+		"rootDir": "src",
+		"outDir": "dist",
+		"baseUrl": ".",
+		"paths": {
+			"@/*": ["./src/*"]
+		},
+		"tsBuildInfoFile": "dist/.tsbuildinfo",
+		"noUnusedLocals": false,
+		"noUnusedParameters": false
+	},
+	"include": ["src"]
+}
