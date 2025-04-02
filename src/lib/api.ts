@@ -219,13 +219,13 @@ export async function culcFine(user: User & { problemHolders: ProblemHolder[] },
 
 /**
  * 벌금 계산 식
- * @param n 벌금 계산을 위한 실패 횟수
+ * @param n 한 주에 풀지 않은 횟수
  * @param challenge 도전문제 달성 여부
  * @returns 계산된 벌금
  */
 export function fineExp(n: number, challenge: boolean): number {
 	if (n === 0) return 0;
-	else return 1000 * 3 ** Math.min(3, n) + (challenge ? 0 : 3000);
+	else return 1000 * 2 ** Math.min(4, n) + (challenge ? 0 : 2000);
 }
 
 /**
