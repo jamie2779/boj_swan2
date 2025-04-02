@@ -1,5 +1,5 @@
 import { Command } from '@sapphire/framework';
-import { BaseCommand } from '../../lib/baseCommand';
+import { BaseCommand } from '@/lib/baseCommand';
 import { SlashCommandBuilder } from '@discordjs/builders';
 import { isMessageInstance } from '@sapphire/discord.js-utilities';
 

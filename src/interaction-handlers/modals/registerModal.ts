@@ -1,6 +1,6 @@
 import { InteractionHandler, InteractionHandlerTypes } from '@sapphire/framework';
 import { type ModalSubmitInteraction } from 'discord.js';
-import { getSolvedUser, saveSolvedProblems, updateUserRole } from '../../lib/api';
+import { getSolvedUser, saveSolvedProblems, updateUserRole } from '@/lib/api';
 import { User, ProblemHolder } from '@prisma/client';
 
 export class RegisterModalHandler extends InteractionHandler {

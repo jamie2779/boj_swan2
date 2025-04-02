@@ -1,7 +1,7 @@
 {
 	"name": "boj_swan2",
 	"version": "1.0.0",
-	"main": "dist/index.js",
+	"main": "src/index.js",
 	"author": "@sapphire",
 	"license": "UNLICENSE",
 	"type": "commonjs",
@@ -29,18 +29,18 @@
 		"@types/cron": "^2.0.1",
 		"@types/node": "^22.10.7",
 		"@types/ws": "^8.5.13",
+		"cross-env": "^7.0.3",
 		"prettier": "^3.4.2",
-		"tsc-watch": "^6.3.0",
+		"tsc-alias": "^1.8.13",
+		"tsx": "^4.19.3",
 		"typescript": "~5.4.5"
 	},
 	"scripts": {
 		"sapphire": "sapphire",
 		"generate": "sapphire generate",
-		"build": "tsc",
-		"watch": "tsc -w",
+		"build": "tsc && tsc-alias -p ./tsconfig.base.json",
 		"start": "node dist/index.js",
-		"dev": "npm run build && npm run start",
-		"watch:start": "tsc-watch --onSuccess \"npm run start\"",
+		"dev": "cross-env NODE_ENV=development tsx watch ./src/index.ts",
 		"format": "prettier --write \"src/\""
 	},
 	"prettier": "@sapphire/prettier-config"

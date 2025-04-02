@@ -1,6 +1,6 @@
 import { Precondition } from '@sapphire/framework';
 import type { ChatInputCommandInteraction } from 'discord.js';
-import { prisma } from '../lib/prisma';
+import { prisma } from '@/lib/prisma';
 
 export class IsNewUserPrecondition extends Precondition {
 	public override async chatInputRun(interaction: ChatInputCommandInteraction) {

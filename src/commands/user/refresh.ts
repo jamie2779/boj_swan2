@@ -1,7 +1,7 @@
 import { Command, BucketScope } from '@sapphire/framework';
-import { BaseCommand } from '../../lib/baseCommand';
+import { BaseCommand } from '@/lib/baseCommand';
 import { SlashCommandBuilder } from '@discordjs/builders';
-import { refreshAllUser } from '../../lib/api';
+import { refreshAllUser } from '@/lib/api';
 
 export class InfoCommand extends BaseCommand {
 	public constructor(context: Command.LoaderContext, options: Command.Options) {
