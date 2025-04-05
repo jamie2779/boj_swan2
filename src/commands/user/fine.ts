@@ -36,7 +36,7 @@ export class InfoCommand extends BaseCommand {
 			}
 		});
 
-		let fines = '';
+		let fines = ' ';
 		let fineCount = 0;
 		let fineSum = 0;
 		let finishAll = true;
@@ -54,11 +54,11 @@ export class InfoCommand extends BaseCommand {
 				finishAll = false;
 			}
 			if (fine > 0) {
-				fines += `:x:  ${user.handle} [${fine}원] ${challenge ? ':exclamation:' : finish ? '' : ':question:'}\n `;
+				fines += `:x:  ${user.handle} [${fine}원] ${challenge ? '!' : finish ? '' : '?'}\n `;
 				fineCount++;
 				fineSum += fine;
 			} else {
-				fines += `:white_check_mark:  ${user.handle} [0원] ${challenge ? ':exclamation:' : finish ? '' : ':question:'}\n `;
+				fines += `:white_check_mark:  ${user.handle} [0원] ${challenge ? '!' : finish ? '' : '?'}\n `;
 			}
 		}
 		if (!startAll || !endAll) {
