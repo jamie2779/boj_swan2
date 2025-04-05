@@ -99,7 +99,7 @@ ${line03}${dev ? ` ${pad}${blc('<')}${llc('/')}${blc('>')} ${llc('DEVELOPMENT MO
 						const filteredProblems = user.problemHolders.filter((p) => p.strick);
 						const challengeProblems = user.problemHolders.filter((p) => p.challenge);
 						if (filteredProblems.length > 0) {
-							stricks += `:white_check_mark:  ${user.handle} [${filteredProblems.length}/${user.problemHolders.length}문제] ${challengeProblems.length > 0 ? '!' : ''}\n `;
+							stricks += `:white_check_mark:  ${user.handle} [${filteredProblems.length}문제/${user.problemHolders.length}문제] ${challengeProblems.length > 0 ? '!' : ''}\n `;
 							strickCount++;
 						} else {
 							stricks += `:x:  ${user.handle} [${filteredProblems.length}문제/${user.problemHolders.length}문제] ${challengeProblems.length > 0 ? '!' : ''}\n `;
