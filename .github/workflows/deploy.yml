@@ -1,0 +1,51 @@
+name: Deploy
+
+on:
+  workflow_dispatch:
+  push:
+    branches: ['main']
+
+jobs:
+  deploy:
+    name: Deploy
+    environment: Production
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Monorepo install
+        uses: ./.github/actions/pnpm-install
+
+      - name: Create .env file
+        run: |
+          echo DATABASE_URL="${{ secrets.DATABASE_URL }}" >> ./.env
+          echo DISCORD_TOKEN="${{ secrets.DISCORD_TOKEN }}" >> ./.env
+
+          echo GUILD_ID="${{ vars.GUILD_ID }}" >> ./.env
+          echo NOTIFY_CHANNEL_ID="${{ vars.NOTIFY_CHANNEL_ID }}" >> ./.env
+          echo BRONZE_ROLE_ID="${{ vars.BRONZE_ROLE_ID }}" >> ./.env
+          echo SILVER_ROLE_ID="${{ vars.SILVER_ROLE_ID }}" >> ./.env
+          echo GOLD_ROLE_ID="${{ vars.GOLD_ROLE_ID }}" >> ./.env
+          echo PLATINUM_ROLE_ID="${{ vars.PLATINUM_ROLE_ID }}" >> ./.env
+          echo DIAMOND_ROLE_ID="${{ vars.DIAMOND_ROLE_ID }}" >> ./.env
+          echo RUBY_ROLE_ID="${{ vars.RUBY_ROLE_ID }}" >> ./.env
+          echo MASTER_ROLE_ID="${{ vars.MASTER_ROLE_ID }}" >> ./.env
+          echo TZ="Asia/Seoul" >> ./.env
+
+      - name: Apply all pending migrations to the database
+        run: pnpm prisma migrate deploy
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+
+      - name: Build and run Docker Compose
+        run: |
+          docker-compose up -d --build
+        env:
+          COMPOSE_BAKE: true
