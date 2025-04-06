@@ -26,7 +26,6 @@
 	"devDependencies": {
 		"@sapphire/cli": "^1.9.3",
 		"@sapphire/prettier-config": "^2.0.0",
-		"@types/cron": "^2.0.1",
 		"@types/node": "^22.10.7",
 		"@types/ws": "^8.5.13",
 		"cross-env": "^7.0.3",
