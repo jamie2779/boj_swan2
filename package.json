@@ -44,5 +44,6 @@
 		"dev": "cross-env NODE_ENV=development tsx watch ./src/index.ts",
 		"format": "prettier --write \"src/\""
 	},
-	"prettier": "@sapphire/prettier-config"
+	"prettier": "@sapphire/prettier-config",
+	"packageManager": "pnpm@10.7.0"
 }
