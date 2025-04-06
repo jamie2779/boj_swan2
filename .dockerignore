@@ -1,0 +1,21 @@
+# 버전 관리 시스템 관련 파일들
+.git
+.gitignore
+
+# 로컬 의존성 및 빌드 산출물 (컨테이너 내부에서 새로 설치/생성됨)
+node_modules
+dist
+
+# 로깅 및 디버그 파일
+npm-debug.log*
+yarn-error.log*
+*.log
+
+# 환경 변수 파일 (필요한 경우 컨테이너에 따로 주입)
+.env
+
+# 테스트, 문서, IDE 관련 파일들
+coverage
+.vscode
+.idea
+*.md
