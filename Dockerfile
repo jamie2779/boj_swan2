@@ -7,8 +7,8 @@ FROM base AS builder
 WORKDIR /app
 
 COPY package*.json ./
-COPY pnpm-lock.yml ./
-COPY pnpm-workspace.yml ./
+COPY pnpm-lock.yaml ./
+COPY pnpm-workspace.yaml ./
 
 RUN corepack enable
 RUN --mount=type=cache,target=/root/.pnpm-store pnpm install --frozen-lockfile
