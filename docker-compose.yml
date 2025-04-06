@@ -4,5 +4,7 @@ services:
   bot:
     container_name: boj-swan-bot
     restart: always
+    build:
+      context: .
     env_file:
       - ./.env
