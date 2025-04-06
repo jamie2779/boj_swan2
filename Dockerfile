@@ -1,20 +1,25 @@
 FROM node:22-alpine AS base
+ENV COREPACK_DEFAULT_TO_LATEST=0
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
 
 FROM base AS builder
 WORKDIR /app
 
 COPY package*.json ./
-RUN npm install
+COPY pnpm-lock.yml ./
+COPY pnpm-workspace.yml ./
+
+RUN corepack enable
+RUN --mount=type=cache,target=/root/.pnpm-store pnpm install --frozen-lockfile
 
 COPY . .
 
-RUN npm run build
+RUN pnpm build
 
 FROM base AS runner
 WORKDIR /app
 
 COPY --from=builder /app ./
-
-RUN npm prune --production
 
 CMD ["node", "dist/index.js"]
