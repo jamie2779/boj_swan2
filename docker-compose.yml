@@ -1,6 +1,8 @@
 name: boj-swan
 
 services:
-  api:
+  bot:
     container_name: boj-swan-bot
     restart: always
+    env_file:
+      - ./.env
