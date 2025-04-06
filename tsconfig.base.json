@@ -6,7 +6,9 @@
 		"paths": {
 			"@/*": ["./src/*"]
 		},
-		"tsBuildInfoFile": "dist/.tsbuildinfo"
+		"tsBuildInfoFile": "dist/.tsbuildinfo",
+		"noUnusedLocals": false,
+		"noUnusedParameters": false
 	},
 	"include": ["src"]
 }
