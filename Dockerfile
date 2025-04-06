@@ -18,6 +18,7 @@ RUN --mount=type=cache,target=/root/.pnpm-store pnpm install --frozen-lockfile
 
 # 소스 코드 복사 후 빌드 수행
 COPY . .
+RUN pnpm prisma generate
 RUN pnpm build
 
 # 프로덕션에 필요한 의존성만 남김
