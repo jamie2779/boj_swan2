@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { User, ProblemHolder } from '@prisma/client';
 import { SolvedUser, SolvedProblemList, SolvedProblem } from './solvedType';
-import { prisma } from './prisma';
+import prisma from '@/lib/prisma';
 import { tierMapping } from './tier';
 import { container } from '@sapphire/framework';
 

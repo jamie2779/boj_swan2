@@ -1,38 +1,20 @@
 import { PrismaClient } from '@prisma/client';
-import { container } from '@sapphire/framework';
 
-export const prisma = new PrismaClient({
-	log: [
-		{ level: 'query', emit: 'event' },
-		{ level: 'error', emit: 'event' },
-		{ level: 'warn', emit: 'event' },
-		{ level: 'info', emit: 'event' }
-	]
-});
+const prismaClientSingleton = () => {
+	return new PrismaClient({
+		log: [
+			{ level: 'query', emit: 'event' },
+			{ level: 'error', emit: 'event' },
+			{ level: 'warn', emit: 'event' },
+			{ level: 'info', emit: 'event' }
+		]
+	});
+};
 
-//쿼리 로그 (요약)
-prisma.$on('query', (e) => {
-	const operation = e.query.split(' ')[0];
-	const table = e.query.match(/from\s+`?(\w+)`?/i)?.[1] || '';
-	console.log(`🟦 [${operation}] ${table}(${e.duration}ms)`);
-});
+const globalForPrisma = global as unknown as { prisma: ReturnType<typeof prismaClientSingleton> };
 
-//에러 로그
-prisma.$on('error', (e) => {
-	console.error('🟥 [PRISMA ERROR]');
-	console.error(`🔹 ${e.message}`);
-});
+const prisma = globalForPrisma.prisma ?? prismaClientSingleton();
 
-//경고 로그
-prisma.$on('warn', (e) => {
-	console.warn('🟨 [PRISMA WARN]');
-	console.warn(`🔸 ${e.message}`);
-});
+if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
 
-//정보 로그
-prisma.$on('info', (e) => {
-	console.info('ℹ️ [PRISMA INFO]');
-	console.info(`🔹 ${e.message}`);
-});
-
-container.prisma = prisma;
+export default prisma;

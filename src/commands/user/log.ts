@@ -2,7 +2,7 @@ import { Command } from '@sapphire/framework';
 import { BaseCommand } from '@/lib/baseCommand';
 import { SlashCommandBuilder } from '@discordjs/builders';
 import { EmbedBuilder } from 'discord.js';
-import { prisma } from '@/lib/prisma';
+import prisma from '@/lib/prisma';
 import { fineExp } from '@/lib/api';
 
 export class InfoCommand extends BaseCommand {
