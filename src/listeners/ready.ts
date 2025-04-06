@@ -3,10 +3,10 @@ import { Listener } from '@sapphire/framework';
 import type { StoreRegistryValue } from '@sapphire/pieces';
 import { blue, gray, green, magenta, magentaBright, white, yellow } from 'colorette';
 import { CronJob } from 'cron';
-import type { TextChannel } from 'discord.js';
+import type { Role, TextChannel } from 'discord.js';
 import { refreshAllUser, culcFine } from '@/lib/api';
 import { EmbedBuilder } from 'discord.js';
-import { prisma } from '@/lib/prisma';
+import prisma from '@/lib/prisma';
 
 const dev = process.env.NODE_ENV !== 'production';
 
@@ -17,8 +17,40 @@ export class UserEvent extends Listener {
 	public override async run() {
 		this.printBanner();
 		this.printStoreDebugInformation();
+		await this.setupInitialData();
 		await refreshAllUser();
 		this.initCronJobs();
+	}
+
+	private async setupInitialData() {
+		this.container.client.logger.info('Loading guilds and roles');
+
+		const guild = await this.container.client.guilds.fetch(process.env.GUILD_ID!);
+		this.container.guild = guild;
+
+		const roleIds = [
+			process.env.BRONZE_ROLE_ID!,
+			process.env.SILVER_ROLE_ID!,
+			process.env.GOLD_ROLE_ID!,
+			process.env.PLATINUM_ROLE_ID!,
+			process.env.DIAMOND_ROLE_ID!,
+			process.env.RUBY_ROLE_ID!,
+			process.env.MASTER_ROLE_ID!
+		];
+
+		const roles = await Promise.all(roleIds.map((roleId) => guild.roles.fetch(roleId)));
+		this.container.roles = roles.filter((role): role is Role => role !== null);
+
+		this.container.client.logger.info('Loaded guilds and roles');
+
+		this.container.client.logger.info('Loading admins');
+
+		const admins = await this.container.prisma.user.findMany({
+			where: { is_admin: true }
+		});
+		this.container.adminIds = admins.map((admin) => admin.discord_id);
+
+		this.container.client.logger.info('Loaded admins');
 	}
 
 	private printBanner() {
