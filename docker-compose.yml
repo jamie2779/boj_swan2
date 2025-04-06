@@ -1,0 +1,6 @@
+name: boj-swan
+
+services:
+  api:
+    container_name: boj-swan-bot
+    restart: always
