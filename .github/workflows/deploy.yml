@@ -20,7 +20,7 @@ jobs:
         with:
           node-version: 22
 
-      - name: Monorepo install
+      - name: Install Packages
         uses: ./.github/actions/pnpm-install
 
       - name: Create .env file
