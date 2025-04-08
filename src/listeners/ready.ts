@@ -140,7 +140,7 @@ ${line03}${dev ? ` ${pad}${blc('<')}${llc('/')}${blc('>')} ${llc('DEVELOPMENT MO
 					}
 					const embed = new EmbedBuilder()
 						.setColor(0xadff2f)
-						.setTitle(`${new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1, 6).toLocaleDateString()} 스트릭 목록`)
+						.setTitle(`${new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1, 6).toLocaleDateString('ko-KR')} 스트릭 목록`)
 						.addFields([
 							{
 								name: `성공: ${strickCount}명, 실패: ${notStrickCount}명`,
@@ -201,7 +201,7 @@ ${line03}${dev ? ` ${pad}${blc('<')}${llc('/')}${blc('>')} ${llc('DEVELOPMENT MO
 					}
 					const embed = new EmbedBuilder()
 						.setColor(0xadff2f)
-						.setTitle(`${start.toLocaleDateString()} ~ ${end.toLocaleDateString()} 주간 정산`)
+						.setTitle(`${start.toLocaleDateString('ko-KR')} ~ ${end.toLocaleDateString('ko-KR')} 주간 정산`)
 						.addFields([
 							{
 								name: `인원: ${fineCount}명, 합계: ${fineSum}원`,

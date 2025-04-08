@@ -67,7 +67,7 @@ export class InfoCommand extends BaseCommand {
 
 		const embed = new EmbedBuilder()
 			.setColor(0xadff2f)
-			.setTitle(`${startAll.toLocaleDateString()} ~ ${endAll.toLocaleDateString()} 벌금`)
+			.setTitle(`${startAll.toLocaleDateString('ko-KR')} ~ ${endAll.toLocaleDateString('ko-KR')} 벌금`)
 			.addFields([
 				{
 					name: `인원: ${fineCount}명, 합계: ${fineSum}원 ${finishAll ? '' : '(진행중)'}`,

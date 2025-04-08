@@ -73,12 +73,12 @@ export class InfoCommand extends BaseCommand {
 			}
 			const now = new Date();
 			if (user.create_date > _end) {
-				content += `:grey_question: ${_start.toLocaleDateString()} \n`;
+				content += `:grey_question: ${_start.toLocaleDateString('ko-KR')} \n`;
 			} else if (now < _end) {
-				content += `:grey_question: ${_start.toLocaleDateString()}[?문제/?문제]\n`;
+				content += `:grey_question: ${_start.toLocaleDateString('ko-KR')}[?문제/?문제]\n`;
 				finish = false;
 			} else {
-				content += `${strickCount > 0 ? ':white_check_mark:' : ':x:'}${_start.toLocaleDateString()}[${strickCount}문제/${holders.length}문제] ${challengeCount > 0 ? ':exclamation:' : ''} \n`;
+				content += `${strickCount > 0 ? ':white_check_mark:' : ':x:'}${_start.toLocaleDateString('ko-KR')}[${strickCount}문제/${holders.length}문제] ${challengeCount > 0 ? ':exclamation:' : ''} \n`;
 				if (strickCount > 0) {
 					successCount++;
 				} else {

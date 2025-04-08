@@ -42,7 +42,7 @@ export class InfoCommand extends BaseCommand {
 				{ name: '푼 문제 수', value: `${user.solved_count}`, inline: true },
 				{ name: '티어', value: `${tierMapping[user.tier].tier}`, inline: true },
 				{ name: '레이팅', value: `${user.rating}`, inline: true },
-				{ name: '등록 날짜', value: `${user.create_date.toLocaleDateString()}`, inline: false }
+				{ name: '등록 날짜', value: `${user.create_date.toLocaleDateString('ko-KR')}`, inline: false }
 			)
 			.setTimestamp()
 			.setFooter({ text: `${interaction.user.username}님이 요청`, iconURL: interaction.user.displayAvatarURL() });
