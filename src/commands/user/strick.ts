@@ -7,7 +7,7 @@ import { updateUser, saveSolvedProblems } from '@/lib/api';
 
 export class InfoCommand extends BaseCommand {
 	public constructor(context: Command.LoaderContext, options: Command.Options) {
-		super(context, { ...options, preconditions: ['userOnly'], cooldownDelay: 300_000 });
+		super(context, { ...options, preconditions: ['userOnly'], cooldownDelay: 1 });
 	}
 
 	protected createChatInput(builder: SlashCommandBuilder) {
