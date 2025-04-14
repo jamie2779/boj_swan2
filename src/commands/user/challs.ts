@@ -25,7 +25,13 @@ export class InfoCommand extends BaseCommand {
 				discord_id: interaction.user.id
 			},
 			include: {
-				problemHolders: true
+				problemHolders: {
+					where: {
+						problem_id: {
+							gte: 1000
+						}
+					}
+				}
 			}
 		});
 

@@ -37,6 +37,7 @@ CREATE TABLE `ProblemHolder` (
     `challenge` BOOLEAN NOT NULL DEFAULT false,
     `create_date` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
+    INDEX `ProblemHolder_problem_id_fkey`(`problem_id`),
     UNIQUE INDEX `ProblemHolder_user_id_problem_id_key`(`user_id`, `problem_id`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -46,4 +47,3 @@ ALTER TABLE `ProblemHolder` ADD CONSTRAINT `ProblemHolder_problem_id_fkey` FOREI
 
 -- AddForeignKey
 ALTER TABLE `ProblemHolder` ADD CONSTRAINT `ProblemHolder_user_id_fkey` FOREIGN KEY (`user_id`) REFERENCES `User`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
-

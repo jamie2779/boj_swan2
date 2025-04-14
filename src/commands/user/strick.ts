@@ -69,11 +69,13 @@ export class InfoCommand extends BaseCommand {
 		});
 
 		const strickCount = holders.filter((p) => p.strick).length;
+		const realHolders = holders.filter((p) => p.problem_id >= 1000);
+		const realStrickCount = realHolders.filter((p) => p.strick).length;
 
 		const embed = new EmbedBuilder()
 			.setColor(strickCount > 0 ? 0xadff2f : 0xff0000)
 			.setTitle(`${user.handle}님이 ${start.toLocaleDateString('ko-KR')}의 문제를 ${strickCount > 0 ? '풀었습니다' : '풀지 않았습니다'}`)
-			.setDescription(`푼 문제 수: ${holders.length}, 조건에 맞는 문제 수: ${strickCount}`)
+			.setDescription(`푼 문제 수: ${realHolders.length}, 조건에 맞는 문제 수: ${realStrickCount}`)
 			.setTimestamp()
 			.setFooter({
 				text: `${interaction.user.username}님이 요청`,
