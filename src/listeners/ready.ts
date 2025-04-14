@@ -130,11 +130,13 @@ ${line03}${dev ? ` ${pad}${blc('<')}${llc('/')}${blc('>')} ${llc('DEVELOPMENT MO
 					for (const user of users) {
 						const filteredProblems = user.problemHolders.filter((p) => p.strick);
 						const challengeProblems = user.problemHolders.filter((p) => p.challenge);
+						const realProblems = user.problemHolders.filter((p) => p.problem_id >= 1000);
+						const realStrickPoblems = realProblems.filter((p) => p.strick);
 						if (filteredProblems.length > 0) {
-							stricks += `:white_check_mark:  ${user.handle} [${filteredProblems.length}문제/${user.problemHolders.length}문제] ${challengeProblems.length > 0 ? '!' : ''}\n `;
+							stricks += `:white_check_mark:  ${user.handle} [${realStrickPoblems.length}문제/${realProblems.length}문제] ${challengeProblems.length > 0 ? '!' : ''}\n `;
 							strickCount++;
 						} else {
-							stricks += `:x:  ${user.handle} [${filteredProblems.length}문제/${user.problemHolders.length}문제] ${challengeProblems.length > 0 ? '!' : ''}\n `;
+							stricks += `:x:  ${user.handle} [${realStrickPoblems.length}문제/${realProblems.length}문제] ${challengeProblems.length > 0 ? '!' : ''}\n `;
 							notStrickCount++;
 						}
 					}
@@ -168,7 +170,7 @@ ${line03}${dev ? ` ${pad}${blc('<')}${llc('/')}${blc('>')} ${llc('DEVELOPMENT MO
 			new CronJob('5 6 * * 1', async () => {
 				try {
 					const now = new Date();
-					const start = new Date(now.getFullYear(), now.getMonth(), now.getDate() - now.getDay() + 1, 6);
+					const start = new Date(now.getFullYear(), now.getMonth(), now.getDate() - now.getDay() - 5, 6);
 					const end = new Date(start);
 					end.setDate(end.getDate() + 6);
 
