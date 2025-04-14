@@ -36,7 +36,8 @@ export async function saveSolvedProblems(user: User & { problemHolders: ProblemH
 		const data = res.data as SolvedProblemList;
 		problems.push(...data.items);
 
-		if (user.problemHolders.length === data.count) return user.problemHolders;
+		const realHolders = user.problemHolders.filter((ph) => ph.problem_id >= 1000);
+		if (realHolders.length === data.count) return user.problemHolders;
 		const last_page = Math.ceil(data.count / 50);
 		for (let page = 2; page <= last_page; page++) {
 			try {
@@ -50,7 +51,7 @@ export async function saveSolvedProblems(user: User & { problemHolders: ProblemH
 		}
 
 		// 이미 저장된 문제 ID 확인
-		const existingProblemIds = new Set(user.problemHolders.map((ph) => ph.problem_id));
+		const existingProblemIds = new Set(realHolders.map((ph) => ph.problem_id));
 		const newProblems = problems.filter((p) => !existingProblemIds.has(p.problemId));
 
 		if (newProblems.length === 0) return user.problemHolders;
@@ -106,7 +107,10 @@ export async function saveSolvedProblems(user: User & { problemHolders: ProblemH
 		// 최신 ProblemHolder 리스트 반환
 		const updatedHolders = await prisma.problemHolder.findMany({
 			where: {
-				user_id: user.id
+				user_id: user.id,
+				problem_id: {
+					gte: 1000
+				}
 			}
 		});
 		return updatedHolders;

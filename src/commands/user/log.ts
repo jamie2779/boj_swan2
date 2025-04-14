@@ -68,6 +68,9 @@ export class InfoCommand extends BaseCommand {
 			});
 			const strickCount = holders.filter((p) => p.strick).length;
 			const challengeCount = holders.filter((p) => p.challenge).length;
+			const readHolders = holders.filter((p) => p.problem_id >= 1000);
+			const realStrickCount = readHolders.filter((p) => p.strick).length;
+
 			if (challengeCount > 0) {
 				challenge = true;
 			}
@@ -78,7 +81,7 @@ export class InfoCommand extends BaseCommand {
 				content += `:grey_question: ${_start.toLocaleDateString('ko-KR')}[?문제/?문제]\n`;
 				finish = false;
 			} else {
-				content += `${strickCount > 0 ? ':white_check_mark:' : ':x:'}${_start.toLocaleDateString('ko-KR')}[${strickCount}문제/${holders.length}문제] ${challengeCount > 0 ? ':exclamation:' : ''} \n`;
+				content += `${strickCount > 0 ? ':white_check_mark:' : ':x:'}${_start.toLocaleDateString('ko-KR')}[${realStrickCount}문제/${readHolders.length}문제] ${challengeCount > 0 ? ':exclamation:' : ''} \n`;
 				if (strickCount > 0) {
 					successCount++;
 				} else {
