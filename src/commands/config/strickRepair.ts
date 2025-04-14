@@ -59,7 +59,7 @@ export class InfoCommand extends BaseCommand {
 					}
 				}
 			});
-			console.log(holders);
+
 			if (holders.length === 0) {
 				await prisma.problemHolder.create({
 					data: {
