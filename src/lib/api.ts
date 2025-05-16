@@ -1,8 +1,8 @@
 import axios from 'axios';
 import { User, ProblemHolder } from '@prisma/client';
-import { SolvedUser, SolvedProblemList, SolvedProblem } from './solvedType';
+import { SolvedUser, SolvedProblemList, SolvedProblem } from '@/types/solvedType';
 import prisma from '@/lib/prisma';
-import { tierMapping } from './tier';
+import { tierMapping } from '@/constants/tier';
 import { container } from '@sapphire/framework';
 
 /**

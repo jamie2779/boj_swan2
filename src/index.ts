@@ -1,7 +1,7 @@
 import '@/lib/setup';
 import { LogLevel } from '@sapphire/framework';
 import { GatewayIntentBits } from 'discord.js';
-import { SwanClient } from './structures/SwanClient';
+import { SwanClient } from '@/structures/SwanClient';
 
 const client = new SwanClient({
 	defaultPrefix: '!',
