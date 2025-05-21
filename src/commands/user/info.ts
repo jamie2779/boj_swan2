@@ -3,7 +3,7 @@ import { BaseCommand } from '@/lib/baseCommand';
 import { SlashCommandBuilder } from '@discordjs/builders';
 import { EmbedBuilder } from 'discord.js';
 import prisma from '@/lib/prisma';
-import { tierMapping } from '@/lib/tier';
+import { tierMapping } from '@/constants/tier';
 
 export class InfoCommand extends BaseCommand {
 	public constructor(context: Command.LoaderContext, options: Command.Options) {
@@ -29,6 +29,10 @@ export class InfoCommand extends BaseCommand {
 			return interaction.reply({ content: '등록되지 않은 유저입니다.', ephemeral: true });
 		}
 
+		const tier = tierMapping[user.tier];
+
+		let emoji = tier.emojiId ? this.container.client.emojis.cache.get(tier.emojiId) : ' ';
+
 		await interaction.deferReply();
 		const embed = new EmbedBuilder()
 			.setColor(tierMapping[user.tier].color)
@@ -40,7 +44,7 @@ export class InfoCommand extends BaseCommand {
 				{ name: 'BOJ 핸들', value: `${user.handle}`, inline: true },
 				{ name: '자기소개', value: `${user.bio}`, inline: false },
 				{ name: '푼 문제 수', value: `${user.solved_count}`, inline: true },
-				{ name: '티어', value: `${tierMapping[user.tier].tier}`, inline: true },
+				{ name: '티어', value: `${emoji} ${tier.tier}`, inline: true },
 				{ name: '레이팅', value: `${user.rating}`, inline: true },
 				{ name: '등록 날짜', value: `${user.create_date.toLocaleDateString('ko-KR')}`, inline: false }
 			)

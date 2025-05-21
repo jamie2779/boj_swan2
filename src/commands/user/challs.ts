@@ -3,7 +3,7 @@ import { BaseCommand } from '@/lib/baseCommand';
 import { SlashCommandBuilder } from '@discordjs/builders';
 import prisma from '@/lib/prisma';
 import { EmbedBuilder } from 'discord.js';
-import { tierMapping } from '@/lib/tier';
+import { tierMapping } from '@/constants/tier';
 
 export class InfoCommand extends BaseCommand {
 	public constructor(context: Command.LoaderContext, options: Command.Options) {
@@ -60,7 +60,12 @@ export class InfoCommand extends BaseCommand {
 		const nonSolvedProblems = problems.filter((problem) => !user.problemHolders.some((holder) => holder.problem_id === problem.id));
 
 		const splitProblemList = (problems: typeof solvedProblems, title: string): { name: string; value: string; inline: boolean }[] => {
-			const lines = problems.map((p) => `[[${tierMapping[p.level].tier}] ${p.title}](https://www.acmicpc.net/problem/${p.id})`);
+			const lines = problems.map((p) => {
+				let emojiId = tierMapping[p.level].emojiId;
+				let emoji = emojiId ? this.container.client.emojis.cache.get(emojiId) : ' ';
+
+				return `[${emoji} ${p.title}](https://www.acmicpc.net/problem/${p.id})`;
+			});
 			const fields = [];
 			let chunk: string[] = [];
 			let currentLength = 0;
