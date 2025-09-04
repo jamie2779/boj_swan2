@@ -39,5 +39,5 @@ export const tierMapping: Tier[] = [
 	{ tier: 'Ruby III', rating: 2850, color: 0xee005b, limit: 11, challenge: 4, emojiId: '1372623940035416244' },
 	{ tier: 'Ruby II', rating: 2900, color: 0xff0062, limit: 11, challenge: 4, emojiId: '1372623941427789856' },
 	{ tier: 'Ruby I', rating: 2950, color: 0xff0068, limit: 11, challenge: 4, emojiId: '1372623996721430618' },
-	{ tier: 'Master', rating: 3000, color: 0xba90fa, limit: 11, challenge: 4, emojiId: null }
+	{ tier: 'Master', rating: 3000, color: 0xba90fa, limit: 11, challenge: 4, emojiId: '1413110525440692308' }
 ];
