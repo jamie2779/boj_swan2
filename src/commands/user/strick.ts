@@ -3,7 +3,7 @@ import { BaseCommand } from '@/lib/baseCommand';
 import { SlashCommandBuilder } from '@discordjs/builders';
 import { EmbedBuilder } from 'discord.js';
 import prisma from '@/lib/prisma';
-import { updateUser, saveSolvedProblems } from '@/lib/api';
+import { updateUser, saveSolvedProblems, culcFine } from '@/lib/api';
 
 export class InfoCommand extends BaseCommand {
 	public constructor(context: Command.LoaderContext, options: Command.Options) {
@@ -71,11 +71,12 @@ export class InfoCommand extends BaseCommand {
 		const strickCount = holders.filter((p) => p.strick).length;
 		const realHolders = holders.filter((p) => p.problem_id >= 1000);
 		const realStrickCount = realHolders.filter((p) => p.strick).length;
+		const { challenge } = await culcFine(user, new Date()); // 도전 문제를 풀었는지 확인합니다.
 
 		const embed = new EmbedBuilder()
 			.setColor(strickCount > 0 ? 0xadff2f : 0xff0000)
 			.setTitle(`${user.handle}님이 ${start.toLocaleDateString('ko-KR')}의 문제를 ${strickCount > 0 ? '풀었습니다' : '풀지 않았습니다'}`)
-			.setDescription(`푼 문제 수: ${realHolders.length}, 조건에 맞는 문제 수: ${realStrickCount}`)
+			.setDescription(`푼 문제 수: ${realHolders.length}, 조건에 맞는 문제 수: ${realStrickCount}, 도전문제풀이: ${challenge ? '✅' : '❌'}`)
 			.setTimestamp()
 			.setFooter({
 				text: `${interaction.user.username}님이 요청`,
