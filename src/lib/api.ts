@@ -196,10 +196,13 @@ export async function culcFine(user: User & { problemHolders: ProblemHolder[] },
 		_end.setDate(_end.getDate() + i + 1);
 		const holders = user.problemHolders.filter((p) => p.create_date >= _start && p.create_date < _end);
 		const strickCount = holders.filter((p) => p.strick).length;
-		const challengeCount = holders.filter((p) => p.challenge).length;
-		if (challengeCount > 0) {
-			challenge = true;
-		}
+
+		challenge = true; // 도전문제는 항상 완료된 것으로 하드코딩
+		// const challengeCount = holders.filter((p) => p.challenge).length;
+		// if (challengeCount > 0) {
+		// 	challenge = true;
+		// }
+
 		const now = new Date();
 		if (user.create_date > _end) {
 			continue;

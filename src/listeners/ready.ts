@@ -129,14 +129,16 @@ ${line03}${dev ? ` ${pad}${blc('<')}${llc('/')}${blc('>')} ${llc('DEVELOPMENT MO
 
 					for (const user of users) {
 						const filteredProblems = user.problemHolders.filter((p) => p.strick);
-						const challengeProblems = user.problemHolders.filter((p) => p.challenge);
+						// const challengeProblems = user.problemHolders.filter((p) => p.challenge);
 						const realProblems = user.problemHolders.filter((p) => p.problem_id >= 1000);
 						const realStrickPoblems = realProblems.filter((p) => p.strick);
 						if (filteredProblems.length > 0) {
-							stricks += `:white_check_mark:  ${user.handle} [${realStrickPoblems.length}문제/${realProblems.length}문제] ${challengeProblems.length > 0 ? '!' : ''}\n `;
+							// stricks += `:white_check_mark:  ${user.handle} [${realStrickPoblems.length}문제/${realProblems.length}문제] ${challengeProblems.length > 0 ? '!' : ''}\n `;
+							stricks += `:white_check_mark:  ${user.handle} [${realStrickPoblems.length}문제/${realProblems.length}문제]\n `;
 							strickCount++;
 						} else {
-							stricks += `:x:  ${user.handle} [${realStrickPoblems.length}문제/${realProblems.length}문제] ${challengeProblems.length > 0 ? '!' : ''}\n `;
+							// stricks += `:x:  ${user.handle} [${realStrickPoblems.length}문제/${realProblems.length}문제] ${challengeProblems.length > 0 ? '!' : ''}\n `;
+							stricks += `:x:  ${user.handle} [${realStrickPoblems.length}문제/${realProblems.length}문제]\n `;
 							notStrickCount++;
 						}
 					}
@@ -192,13 +194,15 @@ ${line03}${dev ? ` ${pad}${blc('<')}${llc('/')}${blc('>')} ${llc('DEVELOPMENT MO
 					let fineSum = 0;
 
 					for (const user of users) {
-						const { fine, challenge } = await culcFine(user, start);
+						const { fine } = await culcFine(user, start);
 						if (fine > 0) {
-							fines += `:x: ${user.handle} [${fine}원] ${challenge ? '!' : ''}\n `;
+							// fines += `:x: ${user.handle} [${fine}원] ${challenge ? '!' : ''}\n `;
+							fines += `:x: ${user.handle} [${fine}원]\n `;
 							fineCount++;
 							fineSum += fine;
 						} else {
-							fines += `:white_check_mark: ${user.handle} [0원] ${challenge ? '!' : ''}\n `;
+							// fines += `:white_check_mark: ${user.handle} [0원] ${challenge ? '!' : ''}\n `;
+							fines += `:white_check_mark: ${user.handle} [0원]\n `;
 						}
 					}
 					const embed = new EmbedBuilder()

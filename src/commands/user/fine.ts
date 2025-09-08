@@ -43,7 +43,7 @@ export class InfoCommand extends BaseCommand {
 		let startAll;
 		let endAll;
 		for (const user of users) {
-			const { fine, challenge, finish, start, end } = await culcFine(user, targetDate);
+			const { fine, finish, start, end } = await culcFine(user, targetDate);
 			if (!startAll) {
 				startAll = start;
 			}
@@ -54,11 +54,13 @@ export class InfoCommand extends BaseCommand {
 				finishAll = false;
 			}
 			if (fine > 0) {
-				fines += `:x:  ${user.handle} [${fine}원] ${challenge ? '!' : finish ? '' : '?'}\n `;
+				// fines += `:x:  ${user.handle} [${fine}원] ${challenge ? '!' : finish ? '' : '?'}\n `;
+				fines += `:x:  ${user.handle} [${fine}원]\n `;
 				fineCount++;
 				fineSum += fine;
 			} else {
-				fines += `:white_check_mark:  ${user.handle} [0원] ${challenge ? '!' : finish ? '' : '?'}\n `;
+				// fines += `:white_check_mark:  ${user.handle} [0원] ${challenge ? '!' : finish ? '' : '?'}\n `;
+				fines += `:white_check_mark:  ${user.handle} [0원]\n `;
 			}
 		}
 		if (!startAll || !endAll) {
