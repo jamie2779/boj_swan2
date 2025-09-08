@@ -9,7 +9,7 @@
 		"@discordjs/builders": "^1.11.3",
 		"@prisma/client": "^6.15.0",
 		"@sapphire/decorators": "^6.2.0",
-		"@sapphire/discord.js-utilities": "7.3.2",
+		"@sapphire/discord.js-utilities": "7.3.3",
 		"@sapphire/framework": "^5.3.6",
 		"@sapphire/pieces": "^4.4.1",
 		"@sapphire/plugin-logger": "^4.1.0",
@@ -20,7 +20,7 @@
 		"cron": "^4.3.3",
 		"discord.js": "^14.22.1",
 		"dotenv": "^16.6.1",
-		"ky": "^1.9.1",
+		"ky": "^1.10.0",
 		"prisma": "^6.15.0"
 	},
 	"devDependencies": {
@@ -44,5 +44,5 @@
 		"format": "prettier --write \"src/\""
 	},
 	"prettier": "@sapphire/prettier-config",
-	"packageManager": "pnpm@10.7.1"
+	"packageManager": "pnpm@10.15.1"
 }
